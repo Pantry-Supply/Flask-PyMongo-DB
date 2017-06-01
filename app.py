@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_pymongo import PyMongo
 from pprint import pprint
-import jsonify
+import json
 import requests
 import os
 import datetime
@@ -22,6 +22,17 @@ mongo = PyMongo(app)
 @app.route('/getall')
 def getall():
     return "hello world"
+
+@app.route('/insert', methods=['GET', 'POST'])
+def insert():
+    if request.method == 'POST':
+
+        temp = request.form['temperature']
+        # temp1 = request.data['barcode']
+        # temp = json.loads(request.data['barcode'])
+        # print(temp)
+        print(request.form['temperature'])
+        return temp
 
 
 if __name__ == '__main__':
