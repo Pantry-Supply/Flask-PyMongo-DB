@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_pymongo import PyMongo
+from flask_pymongo import ObjectId
 from pprint import pprint
 import json
 import requests
@@ -40,7 +41,39 @@ def getall():
         'quantity':item['quantity'],
         'item_id':str(item['_id'])
         })
+
     return jsonify({'result': output})
+
+@app.route('/getone/<foodID>')
+def getone(foodID):
+
+    barcode = mongo.db.psupplyBC
+    barcodeItemToFind = barcode.find_one({'_id':ObjectId(foodID)})
+    if (barcodeItemToFind):
+        return jsonify({
+        'brand_name':barcodeItemToFind['brand_name'],
+        'item_name':barcodeItemToFind['item_name'],
+        'size':barcodeItemToFind['size'],
+        'servings_per_container':barcodeItemToFind['servings_per_container'],
+        'units':barcodeItemToFind['units'],
+        'barcode':barcodeItemToFind['barcode'],
+        'quantity':barcodeItemToFind['quantity'],
+        'date_added':barcodeItemToFind['date_added'],
+        'date_removed':barcodeItemToFind['date_removed']
+        })
+
+    tableFromID = mongo.db.psupplyID
+    idItemToFind = tableFromID.find_one({'_id':ObjectId(foodID)})
+    if (idItemToFind):
+        return jsonify({
+        'brand_name':idItemToFind['brand_name'],
+        'item_name':idItemToFind['item_name'],
+        'quantity':idItemToFind['quantity'],
+        'date_added':idItemToFind['date_added'],
+        'date_removed':idItemToFind['date_removed']
+        })
+
+    return "hi over there, can't find anything " + foodID
 
 @app.route('/insert', methods=['GET', 'POST'])
 def insert():
