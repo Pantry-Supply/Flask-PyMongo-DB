@@ -114,8 +114,8 @@ def insertman():
 
         brand_name = request.form['brand_name']
         item_name = request.form['item_name']
-        quantity = request.form['quantity']
-        for i in range(int(quantity)):
+        quantity = int(request.form['quantity'])
+        for i in range(quantity):
             date.append(datetime.datetime.now())
 
         itemID.insert({'brand_name':brand_name, 'item_name':item_name, 'quantity':quantity, 'date_added':date, 'date_removed':[]})
@@ -123,6 +123,78 @@ def insertman():
         return "Item added " + brand_name + " " + item_name
 
     return "This route is POST only"
+
+
+@app.route('/adjustup/<foodID>')
+def adjustup(foodID):
+
+    barcode = mongo.db.psupplyBC
+    barcodeItemToFind = barcode.find_one({'_id':ObjectId(foodID)})
+    if (barcodeItemToFind):
+        barcodeItemToFind['quantity'] += 1
+        barcodeItemToFind['date_added'].append(datetime.datetime.now())
+        barcode.save(barcodeItemToFind)
+        return "found it in barcode table and added quantity 1 and added purchase date"
+
+    tableFromID = mongo.db.psupplyID
+    idItemToFind = tableFromID.find_one({'_id':ObjectId(foodID)})
+    if (idItemToFind):
+        idItemToFind['quantity'] += 1
+        idItemToFind['date_added'].append(datetime.datetime.now())
+        tableFromID.save(idItemToFind)
+        return "found it in ID table and added quantity 1 and added purchase date"
+
+    return "Didn't find any"
+
+
+@app.route('/adjustdown/<foodID>')
+def adjustdown(foodID):
+
+    barcode = mongo.db.psupplyBC
+    barcodeItemToFind = barcode.find_one({'_id':ObjectId(foodID)})
+    if (barcodeItemToFind):
+        if (barcodeItemToFind['quantity'] > 1):
+            barcodeItemToFind['quantity'] -= 1
+            barcodeItemToFind['date_removed'].append(datetime.datetime.now())
+            barcode.save(barcodeItemToFind)
+            return "item decreased by one"
+        # if (barcodeItemToFind['quantity'] == 1):
+        #     barcodeItemToFind['quantity'] = 0
+        #     barcodeItemToFind['date_removed'].append(datetime.datetime.now())
+        #     return "item is now at zero"
+        # else:
+        #     return "soemthing"
+
+        return "found it in barcode table"
+
+    tableFromID = mongo.db.psupplyID
+    idItemToFind = tableFromID.find_one({'_id':ObjectId(foodID)})
+    if (idItemToFind):
+        return "found it in ID table"
+
+
+    return "this is adjust quantity DOWN"
+
+
+@app.route('/delete', methods=['GET', 'DELETE'])
+def remove():
+    if (request.method=='DELETE'):
+
+        itemIdToDelete = request.form['item_id']
+
+        barcode = mongo.db.psupplyBC
+        barcodeItemToFind = barcode.find_one({'_id':ObjectId(itemIdToDelete)})
+        if (barcodeItemToFind):
+            barcode.remove(barcodeItemToFind)
+            return "Removed item from the BARCODE table"
+
+        tableFromID = mongo.db.psupplyID
+        idItemToFind = tableFromID.find_one({'_id':ObjectId(itemIdToDelete)})
+        if (idItemToFind):
+            tableFromID.remove(idItemToFind)
+            return "Removed item from the ID table"
+
+    return "this is from API but did nOT go into DELETE"
 
 if __name__ == '__main__':
     app.debug = True
