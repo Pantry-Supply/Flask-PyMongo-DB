@@ -161,7 +161,7 @@ def adjustup(foodID):
 @app.route('/bcadjustup/<itemid>')
 def bcgoup(itemid):
     barcode = mongo.db.psupplyBC
-    barcodeItemToFind = barcode.find_one({'_id':ObjectId(itemid)})
+    barcodeItemToFind = barcode.find_one({'barcode':itemid})
     if (barcodeItemToFind):
         barcodeItemToFind['quantity'] += 1
         barcodeItemToFind['date_added'].append(datetime.datetime.now())
@@ -210,7 +210,7 @@ def adjustdown(foodID):
 @app.route('/bcadjustdown/<itembc>')
 def bcgodown(itembc):
     barcode = mongo.db.psupplyBC
-    barcodeItemToFind = barcode.find_one({'_id':ObjectId(itembc)})
+    barcodeItemToFind = barcode.find_one({'barcode':itembc})
     if (barcodeItemToFind):
         if (barcodeItemToFind['quantity'] > 1):
             barcodeItemToFind['quantity'] -= 1
