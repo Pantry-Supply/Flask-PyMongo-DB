@@ -158,6 +158,17 @@ def adjustup(foodID):
 
     return "Didn't find any"
 
+@app.route('/bcadjustup/<itemid>')
+def bcgoup(itemid):
+    barcode = mongo.db.psupplyBC
+    barcodeItemToFind = barcode.find_one({'_id':ObjectId(itemid)})
+    if (barcodeItemToFind):
+        barcodeItemToFind['quantity'] += 1
+        barcodeItemToFind['date_added'].append(datetime.datetime.now())
+        barcode.save(barcodeItemToFind)
+        return "found it in barcode table and added quantity 1 and added purchase date"
+    return "Didn't find any"
+
 
 @app.route('/adjustdown/<foodID>')
 def adjustdown(foodID):
@@ -190,6 +201,26 @@ def adjustdown(foodID):
             idItemToFind['quantity'] = 0
             idItemToFind['date_removed'].append(datetime.datetime.now())
             tableFromID.save(idItemToFind)
+            return "item is now at zero"
+        else:
+            return "Item is already at zero"
+
+    return "Sorry no item found"
+
+@app.route('/bcadjustdown/<itembc>')
+def bcgodown(itembc):
+    barcode = mongo.db.psupplyBC
+    barcodeItemToFind = barcode.find_one({'_id':ObjectId(itembc)})
+    if (barcodeItemToFind):
+        if (barcodeItemToFind['quantity'] > 1):
+            barcodeItemToFind['quantity'] -= 1
+            barcodeItemToFind['date_removed'].append(datetime.datetime.now())
+            barcode.save(barcodeItemToFind)
+            return "item decreased by one"
+        if (barcodeItemToFind['quantity'] == 1):
+            barcodeItemToFind['quantity'] = 0
+            barcodeItemToFind['date_removed'].append(datetime.datetime.now())
+            barcode.save(barcodeItemToFind)
             return "item is now at zero"
         else:
             return "Item is already at zero"
