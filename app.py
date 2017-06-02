@@ -50,6 +50,12 @@ def getone(foodID):
     barcode = mongo.db.psupplyBC
     barcodeItemToFind = barcode.find_one({'_id':ObjectId(foodID)})
     if (barcodeItemToFind):
+        diff =[]
+        for i in range(len(barcodeItemToFind['date_removed'])):
+            date_in = barcodeItemToFind['date_added'][i]
+            date_out = barcodeItemToFind['date_removed'][i]
+            delta = date_out - date_in
+            diff.append(str(delta).split('.', 2)[0])
         return jsonify({
         'brand_name':barcodeItemToFind['brand_name'],
         'item_name':barcodeItemToFind['item_name'],
@@ -59,18 +65,26 @@ def getone(foodID):
         'barcode':barcodeItemToFind['barcode'],
         'quantity':barcodeItemToFind['quantity'],
         'date_added':barcodeItemToFind['date_added'],
-        'date_removed':barcodeItemToFind['date_removed']
+        'date_removed':barcodeItemToFind['date_removed'],
+        'difference': diff
         })
 
     tableFromID = mongo.db.psupplyID
     idItemToFind = tableFromID.find_one({'_id':ObjectId(foodID)})
     if (idItemToFind):
+        diff =[]
+        for i in range(len(idItemToFind['date_removed'])):
+            date_in = idItemToFind['date_added'][i]
+            date_out = idItemToFind['date_removed'][i]
+            delta = date_out - date_in
+            diff.append(str(delta).split('.', 2)[0])
         return jsonify({
         'brand_name':idItemToFind['brand_name'],
         'item_name':idItemToFind['item_name'],
         'quantity':idItemToFind['quantity'],
         'date_added':idItemToFind['date_added'],
-        'date_removed':idItemToFind['date_removed']
+        'date_removed':idItemToFind['date_removed'],
+        'difference': diff
         })
 
     return "hi over there, can't find anything " + foodID
@@ -82,7 +96,6 @@ def insert():
         itemBC = mongo.db.psupplyBC
         itemToIncrease = itemBC.find_one({'barcode':barcode})
         if (itemToIncrease):
-            print("there is something in already")
             itemToIncrease['quantity'] +=1
             itemToIncrease['date_added'].append(datetime.datetime.now())
             itemBC.save(itemToIncrease)
@@ -117,7 +130,6 @@ def insertman():
         quantity = int(request.form['quantity'])
         for i in range(quantity):
             date.append(datetime.datetime.now())
-
         itemID.insert({'brand_name':brand_name, 'item_name':item_name, 'quantity':quantity, 'date_added':date, 'date_removed':[]})
 
         return "Item added " + brand_name + " " + item_name
