@@ -114,7 +114,7 @@ def insert():
 
             itemBC.insert({'brand_name':brandName, 'item_name':itemName, 'size':serveSize, 'servings_per_container':servePerCont, 'units':units, 'barcode':barcode, 'quantity':1, 'date_added':date, 'date_removed':[]})
 
-            return "item added" + brandName + " " + itemName
+            return "item added " + brandName + " " + itemName
 
     return "this route is only a POST"
 
