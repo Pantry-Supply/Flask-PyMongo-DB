@@ -158,22 +158,31 @@ def adjustdown(foodID):
             barcodeItemToFind['date_removed'].append(datetime.datetime.now())
             barcode.save(barcodeItemToFind)
             return "item decreased by one"
-        # if (barcodeItemToFind['quantity'] == 1):
-        #     barcodeItemToFind['quantity'] = 0
-        #     barcodeItemToFind['date_removed'].append(datetime.datetime.now())
-        #     return "item is now at zero"
-        # else:
-        #     return "soemthing"
-
-        return "found it in barcode table"
+        if (barcodeItemToFind['quantity'] == 1):
+            barcodeItemToFind['quantity'] = 0
+            barcodeItemToFind['date_removed'].append(datetime.datetime.now())
+            barcode.save(barcodeItemToFind)
+            return "item is now at zero"
+        else:
+            return "Item is already at zero"
 
     tableFromID = mongo.db.psupplyID
     idItemToFind = tableFromID.find_one({'_id':ObjectId(foodID)})
     if (idItemToFind):
-        return "found it in ID table"
+        if (idItemToFind['quantity'] > 1):
+            idItemToFind['quantity'] -= 1
+            idItemToFind['date_removed'].append(datetime.datetime.now())
+            tableFromID.save(idItemToFind)
+            return "item decresed by one"
+        if (idItemToFind['quantity'] == 1):
+            idItemToFind['quantity'] = 0
+            idItemToFind['date_removed'].append(datetime.datetime.now())
+            tableFromID.save(idItemToFind)
+            return "item is now at zero"
+        else:
+            return "Item is already at zero"
 
-
-    return "this is adjust quantity DOWN"
+    return "Sorry no item found"
 
 
 @app.route('/delete', methods=['GET', 'DELETE'])
