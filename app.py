@@ -62,7 +62,7 @@ def getone(foodID):
             diff.append(str(delta).split('.', 2)[0])
             print(sumAverage.seconds)
             print(sumAverage.days)
-        answer = round((sumAverage.seconds + (sumAverage.days*86400))/(60*60*24), 2)
+        answer = round((sumAverage.seconds + (sumAverage.days*86400))/(60*60*24), 1)
         return jsonify({
         'brand_name':barcodeItemToFind['brand_name'],
         'item_name':barcodeItemToFind['item_name'],
@@ -90,7 +90,7 @@ def getone(foodID):
             sum = sum + delta
             sumAverage = sum / (len(idItemToFind['date_removed']))
             diff.append(str(delta).split('.', 2)[0])
-        answer = round((sumAverage.seconds + (sumAverage.days*86400))/(60*60*24), 2)
+        answer = round((sumAverage.seconds + (sumAverage.days*86400))/(60*60*24), 1)
         return jsonify({
         'brand_name':idItemToFind['brand_name'],
         'item_name':idItemToFind['item_name'],
