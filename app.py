@@ -50,12 +50,19 @@ def getone(foodID):
     barcode = mongo.db.psupplyBC
     barcodeItemToFind = barcode.find_one({'_id':ObjectId(foodID)})
     if (barcodeItemToFind):
-        diff =[]
+        diff = []
+        sumAverage = datetime.timedelta(0)
+        sum = datetime.timedelta(0, 0, 0, 0, 0, 0, 0)
         for i in range(len(barcodeItemToFind['date_removed'])):
             date_in = barcodeItemToFind['date_added'][i]
             date_out = barcodeItemToFind['date_removed'][i]
             delta = date_out - date_in
+            sum = sum + delta
+            sumAverage = sum / (len(barcodeItemToFind['date_removed']))
             diff.append(str(delta).split('.', 2)[0])
+            print(sumAverage.seconds)
+            print(sumAverage.days)
+        answer = round((sumAverage.seconds + (sumAverage.days*86400))/(60*60*24), 2)
         return jsonify({
         'brand_name':barcodeItemToFind['brand_name'],
         'item_name':barcodeItemToFind['item_name'],
@@ -66,25 +73,32 @@ def getone(foodID):
         'quantity':barcodeItemToFind['quantity'],
         'date_added':barcodeItemToFind['date_added'],
         'date_removed':barcodeItemToFind['date_removed'],
-        'difference': diff
+        'difference': diff,
+        'ave_day': str(answer)
         })
 
     tableFromID = mongo.db.psupplyID
     idItemToFind = tableFromID.find_one({'_id':ObjectId(foodID)})
     if (idItemToFind):
         diff =[]
+        sumAverage = datetime.timedelta(0)
+        sum = datetime.timedelta(0, 0, 0, 0, 0, 0, 0)
         for i in range(len(idItemToFind['date_removed'])):
             date_in = idItemToFind['date_added'][i]
             date_out = idItemToFind['date_removed'][i]
             delta = date_out - date_in
+            sum = sum + delta
+            sumAverage = sum / (len(idItemToFind['date_removed']))
             diff.append(str(delta).split('.', 2)[0])
+        answer = round((sumAverage.seconds + (sumAverage.days*86400))/(60*60*24), 2)
         return jsonify({
         'brand_name':idItemToFind['brand_name'],
         'item_name':idItemToFind['item_name'],
         'quantity':idItemToFind['quantity'],
         'date_added':idItemToFind['date_added'],
         'date_removed':idItemToFind['date_removed'],
-        'difference': diff
+        'difference': diff,
+        'ave_day': str(answer)
         })
 
     return "hi over there, can't find anything " + foodID
