@@ -242,11 +242,9 @@ def bcgodown(itembc):
     return "Sorry no item found"
 
 
-@app.route('/delete', methods=['GET', 'DELETE'])
-def remove():
+@app.route('/delete/<itemIdToDelete>', methods=['GET', 'DELETE'])
+def remove(itemIdToDelete):
     if (request.method=='DELETE'):
-
-        itemIdToDelete = request.form['item_id']
 
         barcode = mongo.db.psupplyBC
         barcodeItemToFind = barcode.find_one({'_id':ObjectId(itemIdToDelete)})
